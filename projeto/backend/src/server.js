@@ -5,33 +5,37 @@ const cors = require('cors');
 app.use(express.json());
 app.use(cors());
 
-const pacientes = [];
+const produtos = [];
 
-app.post("/paciente", (request, response) => {
+app.post("/produto", (request, response) => {
 
     try {
 
-        let paciente = request.body;
+        let produto = request.body;
 
-        let novoPaciente = {
+        let novoproduto = {
             id: Math.random(),
-            nome: paciente.nome,
-            email: paciente.email,
-            teste_covid: paciente.teste_covid,
-            tomou_vacina: paciente.tomou_vacina
+            nome: produto.nome,
+            quantidade: produto.quantidade,
+            valor: produto.valor,
+            // tomou_vacina: produto.tomou_vacina
         }
 
-        if (paciente.nome == "") {
+        if (produto.nome == "") {
             throw Error("Campo nome vazio")
         }
 
-        if (paciente.email == "") {
-            throw Error("Campo email vazio")
+        if (produto.quantidade == "") {
+            throw Error("Campo quantidade vazio")
         }
 
-        pacientes.push(novoPaciente);
+        if (produto.valor == "") {
+            throw Error("Campo quantidade vazio")
+        }
 
-        return response.status(201).json(novoPaciente);
+        produtos.push(novoproduto);
+
+        return response.status(201).json(novoproduto);
 
     } catch (error) {
 
@@ -43,41 +47,41 @@ app.post("/paciente", (request, response) => {
 
 });
 
-app.get("/paciente", (request, response) => {
+app.get("/produto", (request, response) => {
 
-    return response.status(200).json(pacientes);
+    return response.status(200).json(produtos);
 
 });
 
-app.put("/paciente/:id", (request, response) => {
+app.put("/produto/:id", (request, response) => {
 
     let id = request.params.id;
-    let paciente = request.body;
+    let produto = request.body;
 
-    let updatePaciente;
+    let updateProduto;
 
-    pacientes.map((element) => {
+    produtos.map((element) => {
         if (element.id == id) {
 
-            updatePaciente = element.nome = paciente.nome;
-            updatePaciente = element.email = paciente.email;
-            updatePaciente = element.teste_covid = paciente.teste_covid;
-            updatePaciente = element.tomou_vacina = paciente.tomou_vacina;
+            updateProduto = element.nome = produto.nome;
+            updateProduto = element.quantidade = produto.quantidade;
+            updateProduto = element.valor = produto.valor;
+            // updateProduto = element.tomou_vacina = produto.tomou_vacina;
 
-            return updatePaciente;
+            return updateProduto;
         }
     });
 
-    return response.status(200).json(updatePaciente);
+    return response.status(200).json(updateProduto);
 
 });
 
-app.delete("/paciente/:id", (request, response) => {
+app.delete("/produto/:id", (request, response) => {
 
     let id = request.params.id;
 
-    let indice = pacientes.findIndex(element => element.id == id);
-    pacientes.splice(indice, 1);
+    let indice = produtos.findIndex(element => element.id == id);
+    produtos.splice(indice, 1);
 
     return response.status(204).json();
 

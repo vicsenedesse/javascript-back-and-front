@@ -3,9 +3,9 @@
 
     <div class="container">
 
-      <b-button variant="outline-primary">Button</b-button>
+      <b-button variant="md-raised md-accent pink lighten-4">Button</b-button>
 <b-card no-body>
-    <b-tabs card>
+    <b-tabs card class="pink lighten-4">
       <b-tab title="Tab 1" active>
         <b-card-text>Tab contents 1</b-card-text>
       </b-tab>
@@ -15,60 +15,62 @@
     </b-tabs>
   </b-card>
        <nav>
-        <div class="nav-wrapper blue darken-1">
-          <div class="brand-logo center">Pacientes</div>
+        <div class="nav-wrapper pink darken-1">
+          <div class="brand-logo center">Produtos</div>
         </div>
       </nav>
     
     <form @submit.prevent="salvar">
 
       <label>Nome</label><br>
-      <input type="text" v-model="paciente.nome" placeholder="Nome" required><br>
-      <label>E-mail</label><br>
-      <input type="email" v-model="paciente.email" placeholder="E-mail" required><br>
+      <input type="text" v-model="produto.nome" placeholder="Nome" required><br>
+      <label>Quantidade</label><br>
+      <input type="text" v-model="produto.quantidade" placeholder="Quantidade" required><br>
+      <label>Valor</label><br>
+      <input type="text" v-model="produto.valor" placeholder="Valor" required><br>
+      <!--
       <p>
       <label>
-        <input type="checkbox" v-model="paciente.teste_covid"/>
+        <input type="checkbox" v-model="produto.teste_covid"/>
         <span>Teste Covid</span>
       </label>
       </p>
 
       <p>
       <label>
-        <input type="checkbox" v-model="paciente.tomou_vacina"/>
+        <input type="checkbox" v-model="produto.tomou_vacina"/>
         <span>Tomou Vacina</span>
       </label>
       </p>
+      -->
 
-      <button class="waves-effect waves-light btn">Salvar <i class="material-icons right">save</i> </button>
+      <button class="md-raised pink lighten-4 btn">Salvar <i class="material-icons right">save</i> </button>
 
     </form>
 
     <table>
 
       <thead>
-
         <tr>
+          <th>ID</th>
           <th>NOME</th>
-          <th>EMAIL</th>
-          <th>TESTE COVID</th>
-          <th>TOMOU VACINA</th>
-          <th>OPCOES</th>
+          <th>QUANTIDADE</th>
+          <th>VALOR</th>
         </tr>
 
       </thead>
 
       <tbody>
 
-        <tr v-for="paciente of pacientes" :key="paciente.id">
+        <tr v-for="produto of produtos" :key="produto.id">
 
-          <td>{{ paciente.nome }}</td>
-          <td>{{ paciente.email }}</td>
-          <td>{{ paciente.teste_covid ? 'Sim' : 'Nao' }}</td>
-          <td>{{ paciente.tomou_vacina ? 'Sim' : 'Nao' }}</td>
+          <td>{{ produto.id }}</td>
+          <td>{{ produto.nome }}</td>
+          <td>{{ produto.quantidade }}</td>
+          <td>{{ produto.valor }}</td>
           <td>
-            <button class="waves-effect waves-light btn blue darken-1" @click="editar(paciente)"> <i class="material-icons">mode_edit</i></button>
-            <button class="waves-effect waves-light btn red darken-1" @click="remover(paciente)"><i class="material-icons">delete</i></button>
+            <button class="md-dense md-primary btn lime -1" @click="editar(produto)"> <i class="material-icons">mode_edit</i></button>
+            <button class="md-dense md-primary btn orange -1" @click="remover(produto)"><i class="material-icons">delete</i></button>
           </td>
 
         </tr>
@@ -83,7 +85,7 @@
 
 <script>
 
-import Paciente from './services/pacientes'
+import Produtos from './services/produtos'
 
 export default {
   name: 'App',
@@ -93,14 +95,13 @@ export default {
 
   data(){
     return {
-      paciente: {
+      produto: {
         id: '',
         nome: '',
-        email: '',
-        teste_covid: false,
-        tomou_vacina: false,
+        quantidade: '',
+        valor: 'R$',
       },
-      pacientes: []
+      produtos: []
     }
   },
 
@@ -110,21 +111,26 @@ export default {
 
   methods: {
     salvar(){
-      
-      if(!this.paciente.id){
 
-        Paciente.salvar(this.paciente).then(()=>{
-          this.paciente = {}
-          this.listar()
-          alert('Salvo com sucesso!')
-        }).catch(e => {
-          console.log(e)
-        })
+      if(!this.produto.id){
+        if (this.produto.valor < 1 || this.produto.quantidade < 1){
+          alert('Valor ou quantidade não são aceitos!')
+        }
+        else{
+          Produtos.salvar(this.produto).then(()=>{
+            this.produto = {}
+            this.listar()
+            alert('Salvo com sucesso!')
+            this.produto.valor = 'R$'
+          }).catch(e => {
+            console.log(e)
+          })
+        }
 
       }else{
 
-        Paciente.atualizar(this.paciente).then(()=>{
-          this.paciente = {}
+        Produtos.atualizar(this.produto).then(()=>{
+          this.produto = {}
           this.listar()
           alert('Atualizado com sucesso!')
         }).catch(e => {
@@ -132,38 +138,36 @@ export default {
         })
 
       }
-      
+
     },
     listar(){
 
-      Paciente.listar().then((resposta)=>{
-        this.pacientes = resposta.data
+      Produtos.listar().then((resposta)=>{
+        this.produtos = resposta.data
       }).catch(e => {
           console.log(e)
       })
 
     },
 
-    editar(paciente){
+    editar(produto){
 
-      this.paciente = paciente
-      console.log(this.paciente)
+      this.produto = produto
+      console.log(this.produto)
 
     },
 
-    remover(paciente){
+    remover(produto){
 
-      if(confirm(`Deseja realmente excluir ${paciente.nome}?`)){
+      if(confirm(`Deseja realmente excluir ${produto.nome}?`)){
 
-         Paciente.remover(paciente).then(()=> {
+         Produtos.remover(produto).then(()=> {
             this.listar()
         }).catch(e => {
             console.log(e)
         })
 
       }
-
-     
 
     }
   }
